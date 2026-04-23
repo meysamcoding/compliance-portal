@@ -3,11 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
-import Link from 'next/link';
 
 export default function LoginPage() {
-
-  //Password123!
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -25,23 +22,37 @@ export default function LoginPage() {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
       setErrorMessage(error.message);
       return;
     }
 
-    // Temporary redirect for now
-    // Later we will check role and send admin/client to different dashboards
     if (data.user) {
+      const user = data.user;
+
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        await supabase.from('profiles').insert({
+          id: user.id,
+          email: user.email,
+          role: 'client',
+        });
+      }
+
+      setLoading(false);
       router.push('/dashboard');
     }
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-lg border p-6 shadow-sm">
+    <section className="flex min-h-[70vh] items-center justify-center px-6 py-12">
+      <div className="w-full max-w-md rounded-xl border bg-white p-6 shadow-sm">
         <h1 className="mb-6 text-2xl font-bold">Login</h1>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -82,19 +93,12 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-2 rounded hover:opacity-80"
+            className="w-full rounded bg-black py-2 text-white hover:opacity-80"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
-
-            <Link
-                href="/"
-                className="block text-center w-full border border-gray-300 py-2 rounded hover:bg-gray-100"
-            >
-                Back to Home
-            </Link>
         </form>
       </div>
-    </main>
+    </section>
   );
 }
