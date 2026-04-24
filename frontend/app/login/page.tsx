@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,9 +26,13 @@ export default function LoginPage() {
     if (error) {
       setLoading(false);
       setErrorMessage(error.message);
+
+      if (error.message.toLowerCase().includes('invalid login credentials')) {
+        setShowForgotPassword(true);
+      }
+
       return;
     }
-
     if (data.user) {
       const user = data.user;
 
@@ -89,6 +94,19 @@ export default function LoginPage() {
           {errorMessage ? (
             <p className="text-sm text-red-600">{errorMessage}</p>
           ) : null}
+
+          {showForgotPassword && (
+            <p className="text-sm text-gray-600">
+              Forgot your password?{' '}
+              <button
+                type="button"
+                onClick={() => router.push('/forgot-password')}
+                className="text-blue-600 hover:underline"
+              >
+                Reset password
+              </button>
+            </p>
+          )}
 
           <button
             type="submit"

@@ -23,16 +23,13 @@ export default function DashboardPage() {
         const loadPage = async () => {
             const { data: userData } = await supabase.auth.getUser();
 
-            console.log('userData:', userData);
 
             if (!userData.user) {
                 router.push('/login');
                 return;
             }
 
-            console.log('logged in user id:', userData.user.id);
-
-            const { data: profile, error: profileError } = await supabase
+            const { data: profile } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', userData.user.id)
@@ -54,10 +51,6 @@ export default function DashboardPage() {
         loadPage();
     }, [router]);
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        router.push('/login');
-    };
 
     return (
         <main className="min-h-screen bg-gray-50 p-6">
