@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 
@@ -14,6 +14,8 @@ export default function CreateFilingPage() {
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [users, setUsers] = useState<any[]>([]);
+    const [assignedUserId, setAssignedUserId] = useState('');
 
     const handleCreateFiling = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -26,6 +28,7 @@ export default function CreateFilingPage() {
             due_date: dueDate,
             status,
             notes,
+            assigned_user_id: assignedUserId,
         });
 
         setLoading(false);
@@ -44,6 +47,18 @@ export default function CreateFilingPage() {
 
         router.push('/dashboard');
     };
+
+    useEffect(() => {
+        async function loadUsers() {
+            const { data } = await supabase
+                .from('profiles')
+                .select('id, email');
+
+            if (data) setUsers(data);
+        }
+
+        loadUsers();
+    }, []);
 
     return (
         <main className="min-h-screen bg-gray-50 p-6">
@@ -107,6 +122,24 @@ export default function CreateFilingPage() {
                     </div>
 
                     <div>
+                        <label className="text-sm font-medium">Assign to user</label>
+
+                        <select
+                            value={assignedUserId}
+                            onChange={(e) => setAssignedUserId(e.target.value)}
+                            className="w-full border px-3 py-2 rounded mt-1"
+                        >
+                            <option value="">Select user</option>
+
+                            {users.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.email}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
                         <label className="block mb-1 text-sm font-medium">Notes</label>
                         <textarea
                             value={notes}
@@ -138,6 +171,7 @@ export default function CreateFilingPage() {
                             Cancel
                         </button>
                     </div>
+
                 </form>
             </div>
         </main>

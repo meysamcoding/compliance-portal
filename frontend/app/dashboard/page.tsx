@@ -11,6 +11,11 @@ type Filing = {
     due_date: string;
     status: string;
     notes: string | null;
+    assigned_user_id: string | null;
+    profiles?: {
+        username: string | null;
+        email: string | null;
+    } | null;
 };
 
 export default function DashboardPage() {
@@ -39,10 +44,22 @@ export default function DashboardPage() {
                 setRole(profile.role);
             }
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from('filings')
-                .select('*')
+                .select(`
+    *,
+    profiles:assigned_user_id (
+      username,
+      email
+    )
+  `)
                 .order('created_at', { ascending: false });
+
+            if (profile?.role !== 'admin') {
+                query = query.eq('assigned_user_id', userData.user.id);
+            }
+
+            const { data, error } = await query;
 
             if (!error) setFilings(data || []);
             setLoading(false);
@@ -50,6 +67,24 @@ export default function DashboardPage() {
 
         loadPage();
     }, [router]);
+
+    const handleDelete = async (id: string) => {
+        const confirmDelete = confirm('Are you sure you want to delete this filing?');
+        if (!confirmDelete) return;
+
+        const { error } = await supabase
+            .from('filings')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            alert(error.message);
+            return;
+        }
+
+        // remove from UI without refresh
+        setFilings((prev) => prev.filter((f) => f.id !== id));
+    };
 
 
     return (
@@ -90,6 +125,8 @@ export default function DashboardPage() {
                                     <th className="py-2">State</th>
                                     <th className="py-2">Status</th>
                                     <th className="py-2">Due Date</th>
+                                    <th className="py-2">Assigned To</th>
+                                    {role === 'admin' && <th className="py-2">Actions</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -101,6 +138,7 @@ export default function DashboardPage() {
                                                 className="text-blue-600 hover:underline"
                                             >
                                                 {filing.filing_name}
+
                                             </button>
                                         </td>
                                         <td className="py-2">{filing.state}</td>
@@ -110,6 +148,28 @@ export default function DashboardPage() {
                                             </span>
                                         </td>
                                         <td className="py-2">{filing.due_date}</td>
+                                        <td className="py-2">
+                                            {filing.profiles?.username || filing.profiles?.email || 'Unassigned'}
+                                        </td>
+                                        {role === 'admin' && (
+                                            <td className="py-2 flex gap-2">
+                                                {/* EDIT */}
+                                                <button
+                                                    onClick={() => router.push(`/dashboard/filings/${filing.id}/edit`)}
+                                                    className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+                                                >
+                                                    Edit
+                                                </button>
+
+                                                {/* DELETE */}
+                                                <button
+                                                    onClick={() => handleDelete(filing.id)}
+                                                    className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

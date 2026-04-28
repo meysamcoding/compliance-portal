@@ -16,11 +16,30 @@ type Filing = {
 export default function FilingDetailPage() {
   const params = useParams();
   const router = useRouter();
+
   const [filing, setFiling] = useState<Filing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState('');
 
   useEffect(() => {
-    const loadFiling = async () => {
+    const loadPage = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+
+      if (!userData.user) {
+        router.push('/login');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userData.user.id)
+        .maybeSingle();
+
+      if (profile) {
+        setRole(profile.role);
+      }
+
       const { data, error } = await supabase
         .from('filings')
         .select('*')
@@ -34,8 +53,8 @@ export default function FilingDetailPage() {
       setLoading(false);
     };
 
-    loadFiling();
-  }, [params.id]);
+    loadPage();
+  }, [params.id, router]);
 
   if (loading) {
     return <main className="p-6">Loading...</main>;
@@ -61,11 +80,30 @@ export default function FilingDetailPage() {
         <h1 className="text-2xl font-bold mb-6">Filing Details</h1>
 
         <div className="space-y-3">
-          <p><strong>Name:</strong> {filing.filing_name}</p>
-          <p><strong>State:</strong> {filing.state}</p>
-          <p><strong>Status:</strong> {filing.status}</p>
-          <p><strong>Due Date:</strong> {filing.due_date}</p>
-          <p><strong>Notes:</strong> {filing.notes || 'No notes'}</p>
+          <p>
+            <strong>Name:</strong> {filing.filing_name}
+          </p>
+          <p>
+            <strong>State:</strong> {filing.state}
+          </p>
+          <p>
+            <strong>Status:</strong> {filing.status}
+          </p>
+          <p>
+            <strong>Due Date:</strong> {filing.due_date}
+          </p>
+          <p>
+            <strong>Notes:</strong> {filing.notes || 'No notes'}
+          </p>
+
+          {role === 'admin' && (
+            <button
+              onClick={() => router.push(`/dashboard/filings/${filing.id}/edit`)}
+              className="rounded bg-blue-600 px-4 py-2 text-white"
+            >
+              Edit Filing
+            </button>
+          )}
         </div>
 
         <button
