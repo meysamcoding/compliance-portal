@@ -1,41 +1,59 @@
-# Compliance Portal (MVP)
+# 🧾 Compliance Portal MVP
 
-A simple web-based client portal to manage compliance filings, documents, and approvals.
+A full-stack web application for managing regulatory filings, document uploads, and role-based access.
+
+## 🚀 Features
+
+* 🔐 Authentication (Sign up / Login / Logout)
+* 👤 User roles (Admin / User)
+* 📂 Filing management (Create, Edit, Delete)
+* 📎 Multi-document upload per filing (Supabase Storage)
+* 🗂 View & Delete uploaded documents
+* 👥 Assign filings to users
+* 📊 Dashboard with role-based access
+
+## 🛠 Tech Stack
+
+* Frontend: Next.js (App Router) + TypeScript
+* Backend: Supabase (Auth, Database, Storage)
+* Styling: Tailwind CSS
+
+## 📸 Screenshots
+
+*Add screenshots here later*
+
+## 📦 Getting Started
+
+```bash
+git clone https://github.com/YOUR_USERNAME/compliance-portal.git
+cd compliance-portal
+npm install
+npm run dev
+```
+
+## 🔑 Environment Variables
+
+Create `.env.local`:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```
+
+## 🧠 What I Learned
+
+* Designing role-based access systems
+* Working with Supabase Storage + RLS policies
+* Managing file uploads and database sync
+* Building scalable UI with reusable components
+
+## 📌 Future Improvements
+
+* Document preview (PDF/image)
+* Filing status workflow (pending → approved)
+* Admin dashboard analytics
+* Stripe subscription (free/pro plans)
 
 ---
 
-## 🚀 Overview
-
-This project is an MVP (Minimum Viable Product) for a compliance management system.
-
-It allows:
-
-- Admins to create and manage filings
-- Clients to log in and review filings
-- Clients to approve filings before submission
-
-The goal is to keep compliance work organized in one place.
-
----
-
-## ✨ Features (MVP)
-
-- 🔐 Authentication (login/logout)
-- 👤 Role-based structure (admin / client - coming next)
-- 📊 Dashboard with filings
-- 📁 Filings tracking
-- 📄 Basic UI with Tailwind CSS
-- ☁️ Supabase integration (Auth + Database)
-
----
-
-## 🧱 Tech Stack
-
-- Frontend: Next.js (App Router)
-- Styling: Tailwind CSS
-- Backend: Supabase (Auth, Database, Storage)
-- Deployment (planned): Vercel
-
----
-
-## 📂 Project Structure
+👨‍💻 Built by Meysam
