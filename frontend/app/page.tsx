@@ -81,7 +81,7 @@ export default function HomePage() {
 
           <button
             onClick={() => router.push('/login')}
-            className="px-4 py-2 bg-black text-white rounded hover:opacity-80"
+            className="px-4 py-2 bg-black text-white rounded hover:opacity-80 "
           >
             Login
           </button>
