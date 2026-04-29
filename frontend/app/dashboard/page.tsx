@@ -126,20 +126,14 @@ export default function DashboardPage() {
                                     <th className="py-2">Status</th>
                                     <th className="py-2">Due Date</th>
                                     <th className="py-2">Assigned To</th>
-                                    {role === 'admin' && <th className="py-2">Actions</th>}
+                                    <th className="py-2">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filings.map((filing) => (
                                     <tr key={filing.id} className="border-b hover:bg-gray-50">
-                                        <td className="py-2">
-                                            <button
-                                                onClick={() => router.push(`/dashboard/filings/${filing.id}`)}
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                {filing.filing_name}
-
-                                            </button>
+                                        <td className="py-2 font-medium text-gray-900">
+                                            {filing.filing_name}
                                         </td>
                                         <td className="py-2">{filing.state}</td>
                                         <td className="py-2">
@@ -151,25 +145,32 @@ export default function DashboardPage() {
                                         <td className="py-2">
                                             {filing.profiles?.username || filing.profiles?.email || 'Unassigned'}
                                         </td>
-                                        {role === 'admin' && (
-                                            <td className="py-2 flex gap-2">
-                                                {/* EDIT */}
-                                                <button
-                                                    onClick={() => router.push(`/dashboard/filings/${filing.id}/edit`)}
-                                                    className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
-                                                >
-                                                    Edit
-                                                </button>
+                                        <td className="py-2 flex gap-2">
+                                            <button
+                                                onClick={() => router.push(`/dashboard/filings/${filing.id}`)}
+                                                className="rounded bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-700"
+                                            >
+                                                View
+                                            </button>
 
-                                                {/* DELETE */}
-                                                <button
-                                                    onClick={() => handleDelete(filing.id)}
-                                                    className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        )}
+                                            {role === 'admin' && (
+                                                <>
+                                                    <button
+                                                        onClick={() => router.push(`/dashboard/filings/${filing.id}/edit`)}
+                                                        className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleDelete(filing.id)}
+                                                        className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
